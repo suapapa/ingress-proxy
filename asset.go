@@ -32,8 +32,6 @@ func assetHandler(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.URL.Path
 	a, ok := assets[urlPath]
 	if !ok {
-		log.Printf("ERR: fail to handle: %s", urlPath)
-		notFoundHandler(w, r)
 		return
 	}
 

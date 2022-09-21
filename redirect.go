@@ -33,8 +33,6 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	// redirect for external sites
 	link, ok := redirects[subDomain]
 	if !ok {
-		log.Printf("ERR: fail to handle: %s", urlPath)
-		notFoundHandler(w, r)
 		return
 	}
 

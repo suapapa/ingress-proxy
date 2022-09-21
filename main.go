@@ -29,14 +29,11 @@ func main() {
 		urlPath := r.URL.Path
 		if isPathForAsset(urlPath) {
 			assetHandler(w, r)
-			return
-		}
-
-		if isPathForRedirect(urlPath) {
+		} else if isPathForRedirect(urlPath) {
 			redirectHadler(w, r)
-			return
+		} else {
+			notFoundHandler(w, r)
 		}
-
 	})
 
 	go func() {
