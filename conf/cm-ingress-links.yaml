@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: /ingress-links
+data:
+  links.yaml: |
+    - name: /
+      link: https://homin.dev/ingress
+      reverse_proxy: true
+      reverse_proxy_link: http://ingress.default.svc.cluster.local:8080
+      hide: true
+
+    - name: /blog
+      link: https://homin.dev/blog
+      desc: 이것저것 해킹 블로그
+      reverse_proxy: true
+      reverse_proxy_link: http://blog.default.svc.cluster.local:8080
+
+    - name: /yt
+      link: https://www.youtube.com/c/HominLee
+      desc: 취미 영상
+
+    - name: /gh
+      link: https://github.com/suapapa
+      desc: 오픈소스 프로젝트
+
+    - name: /resume
+      link: https://suapapa.github.io/resume/
+      desc: 온라인 이력서
+
+    - name: /wiki
+      link: https://homin.dev/wiki/
+      reverse_proxy: true
+      reverse_proxy_link: http://wiki.default.svc.cluster.local:8080
+      desc: Wiki (old archive)
+
+    - name: /fb
+      link: https://www.facebook.com/profile.php?id=100005792174163
+      desc: 페이스북
+
+    - name: /insta
+      link: https://www.instagram.com/homin1227/
+      desc: 일상 사진
+
+    - name: /gb
+      link: https://homin.dev/gb
+      reverse_proxy: true
+      reverse_proxy_link: http://gb.default.svc.cluster.local:8080
+      desc: 방명록
+
+    - name: /mqtt
+      link: mosquitto.default.svc.cluster.local
+      port_foward: true
+      in_port: 9001
+      out_port: 9001
+      hide: true
+
+    - name: /asset
+      link: https://homin.dev/asset
+      reverse_proxy: true
+      reverse_proxy_link: http://asset.default.svc.cluster.local:8080
+      hide: true
