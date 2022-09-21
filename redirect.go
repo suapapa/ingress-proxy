@@ -15,26 +15,34 @@ func isPathForRedirect(path string) bool {
 		return false
 	}
 
-	_, ok := redirects[path]
+	// use first depth of path to sub-domain
+	subDomain, _ := getSubdomain(path)
+	log.Printf("subDomain1=%s", subDomain)
+
+	_, ok := redirects[subDomain]
 	return ok
 }
 
 func redirectHadler(w http.ResponseWriter, r *http.Request) {
-	urlPath := r.URL.Path
 	err := updateLinks()
 	if err != nil {
 		log.Printf("ERR: %v", err)
 		return
 	}
 
+	urlPath := r.URL.Path
+
 	// use first depth of path to sub-domain
 	subDomain, _ := getSubdomain(urlPath)
+	log.Printf("subDomain2=%s", subDomain)
 
 	// redirect for external sites
 	link, ok := redirects[subDomain]
 	if !ok {
 		return
 	}
+
+	log.Println("link=", link, ok)
 
 	// reverse proxy for apps from same k8s cluster
 	if link.RP {
@@ -48,7 +56,7 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 
 func getSubdomain(urlPath string) (string, string) {
 	if len(urlPath) == 0 {
-		return "", ""
+		return "/", ""
 	}
 
 	if urlPath[0] == '/' {
@@ -57,8 +65,8 @@ func getSubdomain(urlPath string) (string, string) {
 
 	i := strings.Index(urlPath, "/")
 	if i < 0 {
-		return urlPath, "/"
+		return "/" + urlPath, "/"
 	}
 
-	return urlPath[:i], urlPath[i:]
+	return "/" + urlPath[:i], urlPath[i:]
 }
