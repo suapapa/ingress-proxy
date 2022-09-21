@@ -39,7 +39,8 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	// redirect for external sites
 	link, ok := redirects[subDomain]
 	if !ok {
-		return
+		link = redirects["/"]
+		link.Link = subDomain[1:] + ".default.svc.cluster.local:8080"
 	}
 
 	log.Println("link=", link, ok)

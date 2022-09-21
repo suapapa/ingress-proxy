@@ -31,11 +31,11 @@ func main() {
 		if isPathForAsset(urlPath) {
 			log.Printf("isAsset")
 			assetHandler(w, r)
-		} else if isPathForRedirect(urlPath) {
+		} else /* if isPathForRedirect(urlPath) */ {
 			log.Printf("isRedirect")
 			redirectHadler(w, r)
-		} else {
-			notFoundHandler(w, r)
+			// } else {
+			// 	notFoundHandler(w, r)
 		}
 	})
 
