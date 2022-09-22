@@ -46,7 +46,7 @@ func main() {
 	})
 
 	go func() {
-		log.Printf("listening http on :%d", httpPort)
+		log.Infof("listening http on :%d", httpPort)
 		if err := http.ListenAndServe(fmt.Sprintf(":%d", httpPort), nil); err != nil {
 			log.Fatal(err)
 		}

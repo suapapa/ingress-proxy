@@ -27,7 +27,7 @@ func startPortFoward() error {
 	for _, l := range links {
 		if l.PortFoward {
 			dest := fmt.Sprintf("%s:%d", l.Link, l.OutPort)
-			log.Printf("start portfoward, %s. %d->%s", l.Name, l.InPort, dest)
+			log.Debugf("start portfoward, %s. %d->%s", l.Name, l.InPort, dest)
 			go runPortFoward(l.InPort, dest, tc)
 		}
 	}
@@ -35,10 +35,10 @@ func startPortFoward() error {
 }
 
 func runPortFoward(inPort int, dest string, tc *tls.Config) {
-	log.Printf("listening on port, %d", inPort)
+	log.Infof("listening on port, %d", inPort)
 	l, err := tls.Listen("tcp", fmt.Sprintf(":%d", inPort), tc)
 	if err != nil {
-		log.Printf("ERR: %v", err)
+		log.Errorf("fail to run port foward: %v", err)
 		return
 	}
 	defer l.Close()
@@ -46,7 +46,7 @@ func runPortFoward(inPort int, dest string, tc *tls.Config) {
 	for {
 		conn, err := l.Accept()
 		if err != nil {
-			log.Printf("ERR: %v", err)
+			log.Errorf("fail to run port foward: %v", err)
 			return
 		}
 
@@ -55,10 +55,10 @@ func runPortFoward(inPort int, dest string, tc *tls.Config) {
 }
 
 func handlePortFoward(conn net.Conn, dest string) {
-	log.Printf("staring port-foward to %s", dest)
+	log.Infof("staring port-foward to %s", dest)
 	outConn, err := net.Dial("tcp", dest)
 	if err != nil {
-		log.Printf("ERR: %v", err)
+		log.Errorf("fail to handle port foward: %v", err)
 		return
 	}
 	go copyIO(conn, outConn)

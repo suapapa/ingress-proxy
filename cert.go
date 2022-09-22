@@ -41,7 +41,7 @@ func NewAcmeChallenge(acPath string) *AcmeChallenge {
 func (ac *AcmeChallenge) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ac.fileHandler.ServeHTTP(w, r)
 
-	log.Println("(re)start https server")
+	log.Info("(re)start https server")
 	go startHTTPSServer()
 }
 
@@ -51,7 +51,7 @@ func checkSSLCertUpdated() error {
 		if err != nil {
 			return errors.Wrap(err, "check ssl fail")
 		}
-		log.Printf("INFO: %s", out)
+		log.Info(out)
 		return errors.New("SSL just created")
 	}
 
@@ -90,22 +90,24 @@ func startHTTPSServer() {
 	for {
 		select {
 		case <-ctx.Done():
-			log.Print("ERR: fail to launch https server")
+			log.Error("fail to launch https server")
 			return
 		case <-tick.C:
 			if err := checkSSLCertUpdated(); err != nil {
-				log.Printf("ERR: %v", err)
-				notifyToTelegram(errors.Wrap(err, "fail to start HTTPS").Error())
+				err = errors.Wrap(err, "fail to start HTTPS")
+				log.Errorf("fail to start https server %v", err)
+				notifyToTelegram(err.Error())
 			} else {
 				go func() {
-					log.Printf("listening https on :%d", httpsPort)
+					log.Infof("listening https on :%d", httpsPort)
 					if err := http.ListenAndServeTLS(
 						fmt.Sprintf(":%d", httpsPort),
 						SSL_CERT_FILE, SSL_KEY_FILE,
 						nil,
 					); err != nil {
-						log.Printf("ERR: %v", err)
-						notifyToTelegram(errors.Wrap(err, "fail to start HTTPS").Error())
+						err = errors.Wrap(err, "fail to start HTTPS")
+						log.Errorf("fail to start https server %v", err)
+						notifyToTelegram(err.Error())
 					}
 				}()
 				return

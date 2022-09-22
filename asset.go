@@ -35,7 +35,7 @@ func assetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if b, err := efs.ReadFile(a.dataPath); err != nil {
-		log.Printf("ERR: fail to read asset %s for %s", a.dataPath, urlPath)
+		log.Errorf("fail to read asset %s for %s", a.dataPath, urlPath)
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.Header().Set("Content-Type", a.contentType)

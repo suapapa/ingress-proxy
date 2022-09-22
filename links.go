@@ -52,7 +52,7 @@ func updateLinks() error {
 }
 
 func loadLinksConf(path string) ([]*Link, error) {
-	log.Println("load link conf")
+	log.Info("load link conf")
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, errors.Wrap(err, "fail to load links conf")
