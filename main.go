@@ -41,8 +41,6 @@ func main() {
 			assetHandler(w, r)
 		} else /* if isPathForRedirect(urlPath) */ {
 			redirectHadler(w, r)
-			// } else {
-			// 	notFoundHandler(w, r)
 		}
 	})
 

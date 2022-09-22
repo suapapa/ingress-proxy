@@ -20,11 +20,9 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	// redirect for external sites
 	link, ok := redirects[subDomain]
 	if !ok {
-		// 모르는 건 죄다 ingress 에 투척
+		// 모르는 건 죄다 ingress, 404 에 투척
 		link = redirects["/"]
-		// link.Link = subDomain[1:] + ".default.svc.cluster.local:8080"
-		// notFoundHandler(w, r)
-		// return
+		r.URL.Path = "/404"
 	}
 
 	// reverse proxy for apps from same k8s cluster
