@@ -1,17 +1,14 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 func isPathForRedirect(path string) bool {
 	err := updateLinks()
 	if err != nil {
-		log.Printf("ERR: %v", errors.Wrap(err, "fail to check path for redirect"))
+		log.Errorf("fail to chek for redirect: %v", err)
 		return false
 	}
 
@@ -26,7 +23,7 @@ func isPathForRedirect(path string) bool {
 func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	err := updateLinks()
 	if err != nil {
-		log.Printf("ERR: %v", err)
+		log.Errorf("fail to handle redirect: %v", err)
 		return
 	}
 

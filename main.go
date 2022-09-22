@@ -3,26 +3,35 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/sirupsen/logrus"
 )
 
 const (
-	httpPort = 80
+	httpPort    = 80
+	programName = "ingress-proxy"
+	programVer  = "dev"
 )
 
 var (
 	linksConf string
 	acPath    string
+	debug     bool
 )
 
 func main() {
 	flag.StringVar(&linksConf, "c", "conf/links.yaml", "yaml file which has links")
 	flag.StringVar(&acPath, "ac", "/tmp/letsencrypt/", "acme-challenge file path")
+	flag.BoolVar(&debug, "ad", false, "enagle debug")
 	flag.Parse()
+
+	if debug {
+		log.Logger.SetLevel(logrus.DebugLevel)
+	}
 
 	http.Handle("/.well-known/acme-challenge/", NewAcmeChallenge("/tmp/letsencrypt/"))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +49,7 @@ func main() {
 	})
 
 	go func() {
-		log.Printf("listening http on :%d", httpPort)
+		log.Infof("listening http on :%d", httpPort)
 		if err := http.ListenAndServe(fmt.Sprintf(":%d", httpPort), nil); err != nil {
 			log.Fatal(err)
 		}
