@@ -36,12 +36,10 @@ func main() {
 	http.Handle("/.well-known/acme-challenge/", NewAcmeChallenge("/tmp/letsencrypt/"))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		urlPath := r.URL.Path
-		log.Printf("urlPath=%s", urlPath)
+		// log.Printf("urlPath=%s", urlPath)
 		if isPathForAsset(urlPath) {
-			log.Printf("isAsset")
 			assetHandler(w, r)
 		} else /* if isPathForRedirect(urlPath) */ {
-			log.Printf("isRedirect")
 			redirectHadler(w, r)
 			// } else {
 			// 	notFoundHandler(w, r)

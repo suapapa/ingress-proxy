@@ -5,21 +5,6 @@ import (
 	"strings"
 )
 
-func isPathForRedirect(path string) bool {
-	err := updateLinks()
-	if err != nil {
-		log.Errorf("fail to chek for redirect: %v", err)
-		return false
-	}
-
-	// use first depth of path to sub-domain
-	subDomain, _ := getSubdomain(path)
-	log.Printf("subDomain1=%s", subDomain)
-
-	_, ok := redirects[subDomain]
-	return ok
-}
-
 func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	err := updateLinks()
 	if err != nil {
@@ -31,19 +16,18 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 
 	// use first depth of path to sub-domain
 	subDomain, _ := getSubdomain(urlPath)
-	log.Printf("subDomain2=%s", subDomain)
 
 	// redirect for external sites
 	link, ok := redirects[subDomain]
 	if !ok {
-		link = redirects["/"]
-		link.Link = subDomain[1:] + ".default.svc.cluster.local:8080"
+		// link = redirects["/"]
+		// link.Link = subDomain[1:] + ".default.svc.cluster.local:8080"
+		notFoundHandler(w, r)
+		return
 	}
 
-	log.Println("link=", link, ok)
-
 	// reverse proxy for apps from same k8s cluster
-	if link.RP {
+	if link.RPLink != "" {
 		// homin.dev/blog/page => blog.default.svc.cluster.local:8080 + /page
 		serveReverseProxy(link.RPLink, w, r)
 		return
