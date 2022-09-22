@@ -22,6 +22,7 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		// 모르는 건 죄다 ingress 에 투척
 		link = redirects["/"]
+		r.URL.Path = "404"
 		// link.Link = subDomain[1:] + ".default.svc.cluster.local:8080"
 		// notFoundHandler(w, r)
 		// return
