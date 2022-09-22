@@ -4,7 +4,6 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"github.com/pkg/errors"
@@ -38,6 +37,6 @@ func notifyToTelegram(msg string) {
 	msgFmt := "## ingress-proxy ##\n%v"
 
 	if err2 := sendMsgToTelegram(fmt.Sprintf(msgFmt, msg)); err2 != nil {
-		log.Printf("ERR: %s", err2)
+		log.Errorf("%s", err2)
 	}
 }
