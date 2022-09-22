@@ -21,12 +21,8 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	link, ok := redirects[subDomain]
 	if !ok {
 		// 모르는 건 죄다 ingress, 404 에 투척
-		link = redirects["/"]
-		if subDomain == "/ingress" {
-			r.URL.Path = "/"
-		} else {
-			r.URL.Path = "/404"
-		}
+		link = redirects["/ingress"]
+		r.URL.Path = "/404"
 	}
 
 	// reverse proxy for apps from same k8s cluster
