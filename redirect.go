@@ -21,6 +21,7 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	link, ok := redirects[subDomain]
 	if !ok {
 		// 모르는 건 죄다 ingress, 404 에 투척
+		log.Debugf("404: %s", urlPath)
 		link = redirects["/ingress"]
 		r.URL.Path = "/404"
 	}
@@ -28,10 +29,12 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	// reverse proxy for apps from same k8s cluster
 	if link.RPLink != "" {
 		// homin.dev/blog/page => blog.default.svc.cluster.local:8080 + /page
+		log.Debugf("RP: %s -> %s", urlPath, link.RPLink)
 		serveReverseProxy(link.RPLink, w, r)
 		return
 	}
 
+	log.Debugf("RD: %s -> link.Link", urlPath)
 	http.Redirect(w, r, link.Link, http.StatusMovedPermanently)
 }
 

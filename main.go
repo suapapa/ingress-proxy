@@ -30,7 +30,7 @@ func main() {
 	flag.Parse()
 
 	if debug {
-		log.Logger.SetLevel(logrus.InfoLevel)
+		log.Logger.SetLevel(logrus.DebugLevel)
 	}
 
 	http.Handle("/.well-known/acme-challenge/", NewAcmeChallenge("/tmp/letsencrypt/"))
