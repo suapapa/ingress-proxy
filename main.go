@@ -26,11 +26,11 @@ var (
 func main() {
 	flag.StringVar(&linksConf, "c", "conf/links.yaml", "yaml file which has links")
 	flag.StringVar(&acPath, "ac", "/tmp/letsencrypt/", "acme-challenge file path")
-	flag.BoolVar(&debug, "ad", false, "enagle debug")
+	flag.BoolVar(&debug, "d", false, "enable debug")
 	flag.Parse()
 
 	if debug {
-		log.Logger.SetLevel(logrus.DebugLevel)
+		log.Logger.SetLevel(logrus.InfoLevel)
 	}
 
 	http.Handle("/.well-known/acme-challenge/", NewAcmeChallenge("/tmp/letsencrypt/"))
