@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -20,10 +21,13 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	// redirect for external sites
 	link, ok := redirects[subDomain]
 	if !ok {
+		log.Warnf("404: %s from %s", urlPath, r.RemoteAddr)
 		// 모르는 건 죄다 ingress, 404 에 투척
-		log.Debugf("404: %s", urlPath)
-		link = redirects["/ingress"]
-		r.URL.Path = "/404"
+		// link = redirects["/ingress"]
+		// r.URL.Path = "/404"
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "404")
+		return
 	}
 
 	// reverse proxy for apps from same k8s cluster

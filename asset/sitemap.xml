@@ -6,6 +6,11 @@
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
 <url>
+  <loc>https://homin.dev/dsb/</loc>
+  <lastmod>2022-09-25:08:07+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
   <loc>https://homin.dev/blog</loc>
   <lastmod>2022-09-19T05:08:07+00:00</lastmod>
   <priority>1.00</priority>
@@ -20,11 +25,5 @@
   <lastmod>2022-09-19T05:08:07+00:00</lastmod>
   <priority>1.00</priority>
 </url>
-<url>
-  <loc>https://homin.dev/gb</loc>
-  <lastmod>2022-09-19T05:08:07+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-
 
 </urlset>

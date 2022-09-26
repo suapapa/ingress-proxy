@@ -51,7 +51,7 @@ func checkSSLCertUpdated() error {
 		if err != nil {
 			return errors.Wrap(err, "check ssl fail")
 		}
-		log.Info(out)
+		log.Info(string(out))
 		return errors.New("SSL just created")
 	}
 
@@ -85,7 +85,7 @@ func startHTTPSServer() {
 
 	ctx, cancelF := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelF()
-	tick := time.NewTicker(1 * time.Second)
+	tick := time.NewTicker(3 * time.Second)
 	defer tick.Stop()
 	for {
 		select {

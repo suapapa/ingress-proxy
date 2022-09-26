@@ -13,12 +13,14 @@ type Asset struct {
 var (
 	//go:embed asset/favicon.ico
 	//go:embed asset/ads.txt
+	//go:embed asset/robots.txt
 	//go:embed asset/sitemap.xml
 	efs    embed.FS
 	assets = map[string]*Asset{
 		"/favicon.ico": {contentType: "image/x-icon", dataPath: "asset/favicon.ico"},
-		"/ads.txt":     {contentType: "asset/ads.txt", dataPath: "asset/ads.txt"},
-		"/sitemap.xml": {contentType: "asset/sitemap.xml", dataPath: "asset/favicon.ico"},
+		"/ads.txt":     {contentType: "text/plain", dataPath: "asset/ads.txt"},
+		"/robots.txt":  {contentType: "text/plain", dataPath: "asset/robots.txt"},
+		"/sitemap.xml": {contentType: "text/xml", dataPath: "asset/sitemap.xml"},
 	}
 )
 
