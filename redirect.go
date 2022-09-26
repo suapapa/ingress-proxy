@@ -16,15 +16,12 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.URL.Path
 
 	// use first depth of path to sub-domain
-	subDomain, _ := getSubdomain(urlPath)
+	urlPrefix := getURLPrefix(urlPath)
 
 	// redirect for external sites
-	link, ok := redirects[subDomain]
+	link, ok := redirects[urlPrefix]
 	if !ok {
 		log.Warnf("404: %s from %s", urlPath, r.RemoteAddr)
-		// 모르는 건 죄다 ingress, 404 에 투척
-		// link = redirects["/ingress"]
-		// r.URL.Path = "/404"
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprint(w, "404")
 		return
@@ -42,9 +39,9 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, link.Link, http.StatusMovedPermanently)
 }
 
-func getSubdomain(urlPath string) (string, string) {
+func getURLPrefix(urlPath string) string {
 	if len(urlPath) == 0 {
-		return "/", ""
+		return "/"
 	}
 
 	if urlPath[0] == '/' {
@@ -53,8 +50,8 @@ func getSubdomain(urlPath string) (string, string) {
 
 	i := strings.Index(urlPath, "/")
 	if i < 0 {
-		return "/" + urlPath, "/"
+		return "/" + urlPath
 	}
 
-	return "/" + urlPath[:i], urlPath[i:]
+	return "/" + urlPath[:i]
 }
