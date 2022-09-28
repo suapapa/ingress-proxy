@@ -33,7 +33,20 @@ func main() {
 		log.Logger.SetLevel(logrus.DebugLevel)
 	}
 
-	http.Handle("/.well-known/acme-challenge/", NewAcmeChallenge("/tmp/letsencrypt/"))
+	// HTTP server
+	httpSrvMux := http.NewServeMux()
+	httpSrvMux.Handle("/.well-known/acme-challenge/", NewAcmeChallenge("/tmp/letsencrypt/"))
+	httpSrvMux.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "hello stranger?")
+	})
+	go func() {
+		log.Infof("listening http on :%d", httpPort)
+		if err := http.ListenAndServe(fmt.Sprintf(":%d", httpPort), httpSrvMux); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// HTTPS server
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		urlPath := r.URL.Path
 		// log.Printf("urlPath=%s", urlPath)
@@ -43,15 +56,9 @@ func main() {
 			redirectHadler(w, r)
 		}
 	})
-
-	go func() {
-		log.Infof("listening http on :%d", httpPort)
-		if err := http.ListenAndServe(fmt.Sprintf(":%d", httpPort), nil); err != nil {
-			log.Fatal(err)
-		}
-	}()
-
 	go startHTTPSServer()
+
+	// PortFowarding
 	go startPortFoward()
 
 	c := make(chan os.Signal, 1)
