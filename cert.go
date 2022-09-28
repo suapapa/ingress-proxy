@@ -48,11 +48,12 @@ func (ac *AcmeChallenge) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func checkSSLCertUpdated() error {
 	if !filesExist(SSL_CERT_FILE) || !filesExist(SSL_KEY_FILE) {
 		out, err := exec.Command("/bin/create_ssl_cert.sh").Output()
+		log.Info(string(out))
 		if err != nil {
 			return errors.Wrap(err, "check ssl fail")
 		}
-		log.Info(string(out))
-		return errors.New("SSL just created")
+		log.Warn("SSL just created")
+		time.Sleep(1 * time.Second)
 	}
 
 	currMD5SSLCert, err := md5sumFile(SSL_CERT_FILE)
