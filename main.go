@@ -47,6 +47,7 @@ func main() {
 	}()
 
 	// HTTPS server
+	http.Handle("/.well-known/acme-challenge/", NewAcmeChallenge("/tmp/letsencrypt/"))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		urlPath := r.URL.Path
 		// log.Printf("urlPath=%s", urlPath)
