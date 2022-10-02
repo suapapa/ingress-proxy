@@ -24,6 +24,10 @@ var (
 )
 
 func main() {
+	defer func() {
+		notifyToTelegram("terminated")
+	}()
+
 	flag.StringVar(&linksConf, "c", "conf/links.yaml", "yaml file which has links")
 	flag.StringVar(&acPath, "ac", "/tmp/letsencrypt/", "acme-challenge file path")
 	flag.BoolVar(&debug, "d", false, "enable debug")
