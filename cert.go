@@ -41,8 +41,8 @@ func NewAcmeChallenge(acPath string) *AcmeChallenge {
 func (ac *AcmeChallenge) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ac.fileHandler.ServeHTTP(w, r)
 
-	log.Info("(re)start https server")
-	go startHTTPSServer()
+	log.Debugf("(re)start https server")
+	go startHTTPSServer(false)
 }
 
 func checkSSLCertUpdated() error {
@@ -76,19 +76,32 @@ func checkSSLCertUpdated() error {
 	return nil
 }
 
-func startHTTPSServer() {
+func startHTTPSServer(runCertbot bool) {
 	startHTTPSMutex.Lock()
 	defer startHTTPSMutex.Unlock()
 	if startingHTTPS {
-		log.Infof("already trying to start https server...")
+		log.Debugf("already trying to start https server...")
 		return
 	}
 	startingHTTPS = true
+	defer func() {
+		// for renew ssl cert
+		startingHTTPS = false
+	}()
 
-	ctx, cancelF := context.WithTimeout(context.Background(), 5*time.Minute)
+	// we will try 5 times
+	ctx, cancelF := context.WithTimeout(context.Background(), 5*time.Minute+30*time.Second)
 	defer cancelF()
 	tick := time.NewTicker(1 * time.Minute)
 	defer tick.Stop()
+
+	time.Sleep(3 * time.Second) //wait for http server ready
+	if err := startHTTPSServerInternal(runCertbot); err != nil {
+		log.Errorf("failt to start https server: %v", err)
+	} else {
+		return
+	}
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -96,25 +109,35 @@ func startHTTPSServer() {
 			os.Exit(-1)
 			return
 		case <-tick.C:
-			if err := checkSSLCertUpdated(); err != nil {
-				err = errors.Wrap(err, "fail to start HTTPS")
-				log.Errorf("fail to start https server %v", err)
-				notifyToTelegram(err.Error())
+			if err := startHTTPSServerInternal(runCertbot); err != nil {
+				log.Errorf("failt to start https server: %v", err)
 			} else {
-				go func() {
-					log.Infof("listening https on :%d", httpsPort)
-					if err := http.ListenAndServeTLS(
-						fmt.Sprintf(":%d", httpsPort),
-						SSL_CERT_FILE, SSL_KEY_FILE,
-						nil,
-					); err != nil {
-						err = errors.Wrap(err, "fail to start HTTPS")
-						log.Errorf("fail to start https server %v", err)
-						notifyToTelegram(err.Error())
-					}
-				}()
 				return
 			}
 		}
 	}
+}
+
+func startHTTPSServerInternal(checkSSLCert bool) error {
+	if checkSSLCert {
+		if err := checkSSLCertUpdated(); err != nil {
+			err = errors.Wrap(err, "fail to start HTTPS")
+			log.Errorf("fail to create ssl cert %v", err)
+			notifyToTelegram(err.Error())
+			return err
+		}
+	}
+	go func() {
+		log.Infof("listening https on :%d", httpsPort)
+		if err := http.ListenAndServeTLS(
+			fmt.Sprintf(":%d", httpsPort),
+			SSL_CERT_FILE, SSL_KEY_FILE,
+			nil,
+		); err != nil {
+			err = errors.Wrap(err, "fail to start HTTPS")
+			notifyToTelegram(err.Error())
+			log.Fatalf("fail to listen and serve https %v", err)
+		}
+	}()
+	return nil
 }

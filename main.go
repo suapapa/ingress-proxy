@@ -63,7 +63,7 @@ func main() {
 			redirectHadler(w, r)
 		}
 	})
-	go startHTTPSServer()
+	go startHTTPSServer(true)
 
 	// PortFowarding
 	go startPortFoward()
