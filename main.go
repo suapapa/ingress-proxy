@@ -37,9 +37,11 @@ func main() {
 		log.Logger.SetLevel(logrus.DebugLevel)
 	}
 
+	acmeChallenge := NewAcmeChallenge("/tmp/letsencrypt/")
+
 	// HTTP server
 	httpSrvMux := http.NewServeMux()
-	httpSrvMux.Handle("/.well-known/acme-challenge/", NewAcmeChallenge("/tmp/letsencrypt/"))
+	httpSrvMux.Handle("/.well-known/acme-challenge/", acmeChallenge)
 	httpSrvMux.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "hello stranger?")
 	})
@@ -51,7 +53,7 @@ func main() {
 	}()
 
 	// HTTPS server
-	http.Handle("/.well-known/acme-challenge/", NewAcmeChallenge("/tmp/letsencrypt/"))
+	http.Handle("/.well-known/acme-challenge/", acmeChallenge)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		urlPath := r.URL.Path
 		// log.Printf("urlPath=%s", urlPath)

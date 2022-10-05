@@ -78,20 +78,22 @@ func checkSSLCertUpdated() error {
 
 func startHTTPSServer() {
 	startHTTPSMutex.Lock()
+	defer startHTTPSMutex.Unlock()
 	if startingHTTPS {
+		log.Infof("already trying to start https server...")
 		return
 	}
 	startingHTTPS = true
-	startHTTPSMutex.Unlock()
 
-	ctx, cancelF := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancelF := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancelF()
-	tick := time.NewTicker(3 * time.Second)
+	tick := time.NewTicker(1 * time.Minute)
 	defer tick.Stop()
 	for {
 		select {
 		case <-ctx.Done():
-			log.Error("fail to launch https server")
+			log.Error("fail to launch https server. trying to restart pod...")
+			os.Exit(-1)
 			return
 		case <-tick.C:
 			if err := checkSSLCertUpdated(); err != nil {
