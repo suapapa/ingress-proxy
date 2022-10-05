@@ -14,13 +14,13 @@ import (
 const (
 	httpPort    = 80
 	programName = "ingress-proxy"
-	programVer  = "dev"
 )
 
 var (
-	linksConf string
-	acPath    string
-	debug     bool
+	linksConf  string
+	acPath     string
+	debug      bool
+	programVer = "dev"
 )
 
 func main() {
