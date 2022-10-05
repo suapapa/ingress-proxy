@@ -78,16 +78,13 @@ func checkSSLCertUpdated() error {
 
 func startHTTPSServer(runCertbot bool) {
 	startHTTPSMutex.Lock()
-	defer startHTTPSMutex.Unlock()
 	if startingHTTPS {
 		log.Debugf("already trying to start https server...")
+		startHTTPSMutex.Unlock()
 		return
 	}
+	defer startHTTPSMutex.Unlock()
 	startingHTTPS = true
-	defer func() {
-		// for renew ssl cert
-		startingHTTPS = false
-	}()
 
 	// we will try 5 times
 	ctx, cancelF := context.WithTimeout(context.Background(), 5*time.Minute+30*time.Second)
@@ -139,5 +136,7 @@ func startHTTPSServerInternal(checkSSLCert bool) error {
 			log.Fatalf("fail to listen and serve https %v", err)
 		}
 	}()
+	// for restart https
+	startingHTTPS = false
 	return nil
 }
