@@ -34,9 +34,9 @@ func md5sumFile(filePath string) ([]byte, error) {
 }
 
 func notifyToTelegram(msg string) {
-	msgFmt := "## ingress-proxy ##\n%v"
+	msgFmt := "## %s-%s ##\n%v"
 
-	if err2 := sendMsgToTelegram(fmt.Sprintf(msgFmt, msg)); err2 != nil {
+	if err2 := sendMsgToTelegram(fmt.Sprintf(msgFmt, programName, programVer, msg)); err2 != nil {
 		log.Errorf("%s", err2)
 	}
 }

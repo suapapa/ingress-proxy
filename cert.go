@@ -91,6 +91,11 @@ func startHTTPSServer(runCertbot bool) {
 	defer cancelF()
 	tick := time.NewTicker(1 * time.Minute)
 	defer tick.Stop()
+	// for restart after 5mins
+	go func() {
+		<-time.After(5 * time.Minute)
+		startingHTTPS = false
+	}()
 
 	time.Sleep(3 * time.Second) //wait for http server ready
 	if err := startHTTPSServerInternal(runCertbot); err != nil {
@@ -118,7 +123,7 @@ func startHTTPSServer(runCertbot bool) {
 func startHTTPSServerInternal(checkSSLCert bool) error {
 	if checkSSLCert {
 		if err := checkSSLCertUpdated(); err != nil {
-			err = errors.Wrap(err, "fail to start HTTPS")
+			err = errors.Wrap(err, "fail to check CERT")
 			log.Errorf("fail to create ssl cert %v", err)
 			notifyToTelegram(err.Error())
 			return err
@@ -136,7 +141,5 @@ func startHTTPSServerInternal(checkSSLCert bool) error {
 			log.Fatalf("fail to listen and serve https %v", err)
 		}
 	}()
-	// for restart https
-	startingHTTPS = false
 	return nil
 }
