@@ -99,7 +99,7 @@ func startHTTPSServer(runCertbot bool) {
 
 	time.Sleep(3 * time.Second) //wait for http server ready
 	if err := startHTTPSServerInternal(runCertbot); err != nil {
-		log.Errorf("failt to start https server: %v", err)
+		log.Errorf("fail to start https server: %v", err)
 	} else {
 		return
 	}
@@ -112,7 +112,7 @@ func startHTTPSServer(runCertbot bool) {
 			return
 		case <-tick.C:
 			if err := startHTTPSServerInternal(runCertbot); err != nil {
-				log.Errorf("failt to start https server: %v", err)
+				log.Error("fail to start https server: %v", err)
 			} else {
 				return
 			}
