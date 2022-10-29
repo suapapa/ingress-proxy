@@ -37,6 +37,19 @@ spec:
             - name: tcp
               containerPort: 9001
               hostPort: 9001
+          env:
+            - name: BUCKET_NAME
+              value: homin-dev_asset
+            - name: TELEGRAM_APITOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mysecret
+                  key: telegram_apitoken
+            - name: TELEGRAM_ROOM_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mysecret
+                  key: telegram_room_id
           volumeMounts:
             - name: ingress-links
               subPath: links.yaml
@@ -59,19 +72,6 @@ spec:
             preStop:
               exec:
                 command: ["/bin/sh", "-c", "fusermount -u /bucket"]
-          env:
-            - name: BUCKET_NAME
-              value: 
-            - name: TELEGRAM_APITOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: mysecret
-                  key: telegram_apitoken
-            - name: TELEGRAM_ROOM_ID
-              valueFrom:
-                secretKeyRef:
-                  name: mysecret
-                  key: telegram_room_id
       volumes:
         - name: ingress-links
           configMap:

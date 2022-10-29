@@ -45,7 +45,7 @@ EXPOSE 9001
 EXPOSE 443
 EXPOSE 80
 
-#RUN mkdir /etc/letsencrypt
+RUN mkdir /bucket
 RUN ln -s /bucket/cert /etc/letsencrypt
 
 WORKDIR /bin
