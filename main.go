@@ -24,6 +24,7 @@ var (
 )
 
 func main() {
+	notifyToTelegram("started")
 	defer func() {
 		notifyToTelegram("terminated")
 	}()

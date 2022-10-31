@@ -50,7 +50,7 @@ func checkSSLCertUpdated() error {
 		out, err := exec.Command("/bin/create_ssl_cert.sh").Output()
 		log.Info(string(out))
 		if err != nil {
-			return errors.Wrap(err, "check ssl fail")
+			return errors.Wrap(err, fmt.Sprintf("check ssl fail: %s", string(out)))
 		}
 		log.Warn("SSL just created")
 		time.Sleep(1 * time.Second)
