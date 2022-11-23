@@ -4,9 +4,18 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	"go.opentelemetry.io/otel"
+)
+
+const (
+	tracerName = "http-handler"
 )
 
 func redirectHadler(w http.ResponseWriter, r *http.Request) {
+	_, span := otel.Tracer(tracerName).Start(r.Context(), "redirect-handler")
+	defer span.End()
+
 	err := updateLinks()
 	if err != nil {
 		log.Errorf("fail to handle redirect: %v", err)

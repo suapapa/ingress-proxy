@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel"
 )
 
 const (
@@ -38,6 +39,15 @@ func main() {
 	if debug {
 		log.Logger.SetLevel(logrus.DebugLevel)
 	}
+
+	tp, err := tracerProvider()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Register our TracerProvider as the global so any imported
+	// instrumentation in the future will default to using it.
+	otel.SetTracerProvider(tp)
 
 	acmeChallenge := NewAcmeChallenge("/tmp/letsencrypt/")
 
