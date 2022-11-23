@@ -39,7 +39,11 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	if link.RPLink != "" {
 		// homin.dev/blog/page => blog.default.svc.cluster.local:8080 + /page
 		log.Debugf("RP: %s -> %s", urlPath, link.RPLink)
-		serveReverseProxy(w, r, link.RPLink, pathSurfix)
+		if link.RPOmitPrefix {
+			serveReverseProxy(w, r, link.RPLink, pathSurfix)
+		} else {
+			serveReverseProxy(w, r, link.RPLink, urlPath)
+		}
 		return
 	}
 
