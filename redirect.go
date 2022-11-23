@@ -25,7 +25,7 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.URL.Path
 
 	// use first depth of path to sub-domain
-	pathPrefix := getPathPrefix(urlPath)
+	pathPrefix, pathSurfix := splitPath(urlPath)
 
 	link, ok := redirects[pathPrefix]
 	if !ok {
@@ -37,9 +37,9 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 
 	// reverse proxy for apps from same k8s cluster
 	if link.RPLink != "" {
-		// homin.dev/blog/page => blog.default.svc.cluster.local:8080 + /blog/page
+		// homin.dev/blog/page => blog.default.svc.cluster.local:8080 + /page
 		log.Debugf("RP: %s -> %s", urlPath, link.RPLink)
-		serveReverseProxy(link.RPLink, w, r)
+		serveReverseProxy(w, r, link.RPLink, pathSurfix)
 		return
 	}
 
@@ -48,9 +48,9 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, link.Link, http.StatusMovedPermanently)
 }
 
-func getPathPrefix(urlPath string) string {
+func splitPath(urlPath string) (prefix, surfix string) {
 	if len(urlPath) == 0 {
-		return "/"
+		return "/", ""
 	}
 
 	if urlPath[0] == '/' {
@@ -59,8 +59,8 @@ func getPathPrefix(urlPath string) string {
 
 	i := strings.Index(urlPath, "/")
 	if i < 0 {
-		return "/" + urlPath
+		return "/" + urlPath, ""
 	}
 
-	return "/" + urlPath[:i]
+	return "/" + urlPath[:i], urlPath[i:]
 }

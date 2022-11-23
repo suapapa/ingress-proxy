@@ -5,7 +5,7 @@ import (
 )
 
 // Serve a reverse proxy for a given url
-func serveReverseProxy(target string, res http.ResponseWriter, req *http.Request) {
+func serveReverseProxy(res http.ResponseWriter, req *http.Request, target, path string) {
 	rpc, err := getReverseProxy(target)
 	if err != nil {
 		log.Errorf("fail serve reverse proxy: %v", err)
@@ -15,6 +15,7 @@ func serveReverseProxy(target string, res http.ResponseWriter, req *http.Request
 	// Update the headers to allow for SSL redirection
 	req.URL.Host = url.Host
 	req.URL.Scheme = url.Scheme
+	req.URL.Path = path
 	req.Header.Set("X-Forwarded-Host", req.Header.Get("Host"))
 	req.Host = url.Host
 
