@@ -1,14 +1,15 @@
 package main
 
 import (
+	"context"
 	"net/http"
 
 	"go.opentelemetry.io/otel"
 )
 
 // Serve a reverse proxy for a given url
-func serveReverseProxy(res http.ResponseWriter, req *http.Request, target, path string) {
-	_, span := otel.Tracer(tracerName).Start(req.Context(), "serve-reverse-proxy")
+func serveReverseProxy(trCtx context.Context, res http.ResponseWriter, req *http.Request, target, path string) {
+	_, span := otel.Tracer(tracerName).Start(trCtx, "serve-reverse-proxy")
 	defer span.End()
 
 	rpc, err := getReverseProxy(target)

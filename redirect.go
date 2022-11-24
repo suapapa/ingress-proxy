@@ -13,7 +13,7 @@ const (
 )
 
 func redirectHadler(w http.ResponseWriter, r *http.Request) {
-	_, span := otel.Tracer(tracerName).Start(r.Context(), "redirect-handler")
+	trCtx, span := otel.Tracer(tracerName).Start(r.Context(), "redirect-handler")
 	defer span.End()
 
 	err := updateLinks()
@@ -40,9 +40,9 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 		// homin.dev/blog/page => blog.default.svc.cluster.local:8080 + /page
 		log.Debugf("RP: %s -> %s", urlPath, link.RPLink)
 		if link.RPOmitPrefix {
-			serveReverseProxy(w, r, link.RPLink, pathSurfix)
+			serveReverseProxy(trCtx, w, r, link.RPLink, pathSurfix)
 		} else {
-			serveReverseProxy(w, r, link.RPLink, urlPath)
+			serveReverseProxy(trCtx, w, r, link.RPLink, urlPath)
 		}
 		return
 	}
