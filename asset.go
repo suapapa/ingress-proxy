@@ -3,6 +3,8 @@ package main
 import (
 	"embed"
 	"net/http"
+
+	"go.opentelemetry.io/otel"
 )
 
 type Asset struct {
@@ -30,6 +32,9 @@ func isPathForAsset(path string) bool {
 }
 
 func assetHandler(w http.ResponseWriter, r *http.Request) {
+	_, span := otel.Tracer(tracerName).Start(r.Context(), "asset-handler")
+	defer span.End()
+
 	urlPath := r.URL.Path
 	a, ok := assets[urlPath]
 	if !ok {
