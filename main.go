@@ -40,7 +40,7 @@ func main() {
 		log.Logger.SetLevel(logrus.DebugLevel)
 	}
 
-	tp, err := tracerProvider("http://simplest-collector.default.svc.cluster.local:14268")
+	tp, err := tracerProvider("http://simplest-collector.default.svc.cluster.local:14268/api/traces")
 	if err != nil {
 		log.Fatal(err)
 	}
