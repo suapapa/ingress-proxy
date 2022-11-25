@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Asset struct {
@@ -32,10 +34,12 @@ func isPathForAsset(path string) bool {
 }
 
 func assetHandler(w http.ResponseWriter, r *http.Request) {
-	_, span := otel.Tracer("").Start(r.Context(), "asset-handler")
+	urlPath := r.URL.Path
+	_, span := otel.Tracer("").Start(r.Context(), "asset-handler", trace.WithAttributes(
+		attribute.String("path", urlPath),
+	))
 	defer span.End()
 
-	urlPath := r.URL.Path
 	a, ok := assets[urlPath]
 	if !ok {
 		return
