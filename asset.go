@@ -32,7 +32,7 @@ func isPathForAsset(path string) bool {
 }
 
 func assetHandler(w http.ResponseWriter, r *http.Request) {
-	_, span := otel.Tracer(tracerName).Start(r.Context(), "asset-handler")
+	_, span := otel.Tracer("").Start(r.Context(), "asset-handler")
 	defer span.End()
 
 	urlPath := r.URL.Path

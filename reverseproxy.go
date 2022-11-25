@@ -11,7 +11,7 @@ import (
 
 // Serve a reverse proxy for a given url
 func serveReverseProxy(trCtx context.Context, res http.ResponseWriter, req *http.Request, target, path string) {
-	_, span := otel.Tracer(tracerName).Start(trCtx, "serve-reverse-proxy", trace.WithAttributes(
+	_, span := otel.Tracer("").Start(trCtx, "serve-reverse-proxy", trace.WithAttributes(
 		attribute.String("target", target),
 		attribute.String("path", path),
 	))

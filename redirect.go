@@ -8,12 +8,8 @@ import (
 	"go.opentelemetry.io/otel"
 )
 
-const (
-	tracerName = "http-handler"
-)
-
 func redirectHadler(w http.ResponseWriter, r *http.Request) {
-	trCtx, span := otel.Tracer(tracerName).Start(r.Context(), "redirect-handler")
+	trCtx, span := otel.Tracer("").Start(r.Context(), "redirect-handler")
 	defer span.End()
 
 	err := updateLinks()
