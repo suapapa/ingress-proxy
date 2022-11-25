@@ -26,7 +26,8 @@ func tracerProvider(url string) (*tracesdk.TracerProvider, error) {
 		// Record information about this application in a Resource.
 		tracesdk.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String(programName),
+			semconv.ServiceNameKey.String("homin-dev"),
+			attribute.String("name", programName),
 			attribute.String("ver", programVer),
 			// attribute.Int64("ID", id),
 		)),
