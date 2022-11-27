@@ -17,7 +17,7 @@ const (
 	httpPort    = 80
 	programName = "ingress-proxy"
 
-	otplEP = "http://simplest-collector.default.svc.cluster.local:4317"
+	otplEP = "simplest-collector.default.svc.cluster.local:4317"
 )
 
 var (
