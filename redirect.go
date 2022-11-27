@@ -11,7 +11,9 @@ import (
 
 func redirectHadler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	span := trace.SpanFromContext(ctx)
+	ctx, span := tracer.Start(ctx, "redirect-handler")
+	defer span.End()
+	// span := trace.SpanFromContext(ctx)
 	// span.SetAttributes(
 	// 	attribute.String("app.user.id", req.UserId),
 	// 	attribute.String("app.user.currency", req.UserCurrency),
@@ -38,7 +40,7 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 
 	// reverse proxy for apps from same k8s cluster
 	if link.RPLink != "" {
-		span.AddEvent("reverse-proxy",
+		span.AddEvent("http-reverse-proxy",
 			trace.WithAttributes(attribute.String("reverse-proxy-link", link.RPLink)),
 		)
 		// homin.dev/blog/page => blog.default.svc.cluster.local:8080 + /page
@@ -51,7 +53,7 @@ func redirectHadler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	span.AddEvent("redirect",
+	span.AddEvent("http-redirect",
 		trace.WithAttributes(attribute.String("redirect-link", link.Link)),
 	)
 	// redirect for external sites
