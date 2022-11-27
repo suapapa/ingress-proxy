@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"net/http"
@@ -10,12 +11,13 @@ import (
 	"syscall"
 
 	"github.com/sirupsen/logrus"
-	"go.opentelemetry.io/otel"
 )
 
 const (
 	httpPort    = 80
 	programName = "ingress-proxy"
+
+	otplEP = "http://simplest-collector.default.svc.cluster.local:4317"
 )
 
 var (
@@ -40,14 +42,22 @@ func main() {
 		log.Logger.SetLevel(logrus.DebugLevel)
 	}
 
-	tp, err := tracerProvider("http://simplest-collector.default.svc.cluster.local:14268/api/traces")
-	if err != nil {
-		log.Fatal(err)
-	}
+	ctx := context.Background()
+	tp := initTracerProvider(ctx, otplEP)
+	defer func() {
+		if err := tp.Shutdown(ctx); err != nil {
+			log.Errorf("Error shutting down tracer provider: %v", err)
+		}
+	}()
 
-	// Register our TracerProvider as the global so any imported
-	// instrumentation in the future will default to using it.
-	otel.SetTracerProvider(tp)
+	mp := initMeterProvider(ctx, otplEP)
+	defer func() {
+		if err := mp.Shutdown(ctx); err != nil {
+			log.Errorf("Error shutting down meter provider: %v", err)
+		}
+	}()
+
+	tracer = tp.Tracer(programName)
 
 	acmeChallenge := NewAcmeChallenge("/tmp/letsencrypt/")
 
