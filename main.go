@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"net"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -11,6 +12,8 @@ import (
 	"syscall"
 
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -89,6 +92,21 @@ func main() {
 
 	// PortFowarding
 	go startPortFoward()
+
+	go func() {
+		lis, err := net.Listen("tcp", fmt.Sprintf(":%s", "5050"))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var srv = grpc.NewServer(
+			grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),
+			grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()),
+		)
+		if err := srv.Serve(lis); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
