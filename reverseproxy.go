@@ -3,23 +3,22 @@ package main
 import (
 	"context"
 	"net/http"
-
-	"go.opentelemetry.io/otel/attribute"
+	// "go.opentelemetry.io/otel/attribute"
 )
 
 // Serve a reverse proxy for a given url
 func serveReverseProxy(ctx context.Context, res http.ResponseWriter, req *http.Request, from, to string) {
-	_, span := tracer.Start(ctx, "serve-reverse-proxy")
-	defer span.End()
+	// _, span := tracer.Start(ctx, "serve-reverse-proxy")
+	// defer span.End()
 
 	rpc, err := getReverseProxy(from)
 	if err != nil {
 		log.Errorf("fail serve reverse proxy: %v", err)
 	}
-	span.SetAttributes(
-		attribute.String("from", from),
-		attribute.String("to", to),
-	)
+	// span.SetAttributes(
+	// 	attribute.String("from", from),
+	// 	attribute.String("to", to),
+	// )
 
 	url, proxy := rpc.URL, rpc.ReverseProxy
 

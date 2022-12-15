@@ -1,10 +1,8 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
-	"net"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -12,21 +10,21 @@ import (
 	"syscall"
 
 	"github.com/sirupsen/logrus"
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-	"google.golang.org/grpc"
+	// "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 )
 
 const (
 	httpPort    = 80
 	programName = "ingress-proxy"
 
-	otplEP = "simplest-collector.default.svc.cluster.local:4317"
+	// otplEP = "simplest-collector.default.svc.cluster.local:4317"
 )
 
 var (
-	linksConf  string
-	acPath     string
-	debug      bool
+	linksConf string
+	acPath    string
+	debug     bool
+	// enableTrace bool
 	programVer = "dev"
 )
 
@@ -45,13 +43,16 @@ func main() {
 		log.Logger.SetLevel(logrus.DebugLevel)
 	}
 
-	ctx := context.Background()
-	tp := initTracerProvider(ctx, otplEP)
-	defer func() {
-		if err := tp.Shutdown(ctx); err != nil {
-			log.Errorf("Error shutting down tracer provider: %v", err)
-		}
-	}()
+	// if enableTrace {
+	// 	ctx := context.Background()
+	// 	tp := initTracerProvider(ctx, otplEP)
+	// 	defer func() {
+	// 		if err := tp.Shutdown(ctx); err != nil {
+	// 			log.Errorf("Error shutting down tracer provider: %v", err)
+	// 		}
+	// 	}()
+	// 	tracer = tp.Tracer(programName)
+	// }
 
 	// mp := initMeterProvider(ctx, otplEP)
 	// defer func() {
@@ -59,8 +60,6 @@ func main() {
 	// 		log.Errorf("Error shutting down meter provider: %v", err)
 	// 	}
 	// }()
-
-	tracer = tp.Tracer(programName)
 
 	acmeChallenge := NewAcmeChallenge("/tmp/letsencrypt/")
 
@@ -93,20 +92,20 @@ func main() {
 	// PortFowarding
 	go startPortFoward()
 
-	go func() {
-		lis, err := net.Listen("tcp", fmt.Sprintf(":%s", "5050"))
-		if err != nil {
-			log.Fatal(err)
-		}
+	// go func() {
+	// 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", "5050"))
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
 
-		var srv = grpc.NewServer(
-			grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),
-			grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()),
-		)
-		if err := srv.Serve(lis); err != nil {
-			log.Fatal(err)
-		}
-	}()
+	// 	var srv = grpc.NewServer(
+	// 		grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),
+	// 		grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()),
+	// 	)
+	// 	if err := srv.Serve(lis); err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// }()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)

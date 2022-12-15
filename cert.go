@@ -112,7 +112,7 @@ func startHTTPSServer(runCertbot bool) {
 			return
 		case <-tick.C:
 			if err := startHTTPSServerInternal(runCertbot); err != nil {
-				log.Error("fail to start https server: %v", err)
+				log.Errorf("fail to start https server: %v", err)
 			} else {
 				return
 			}
