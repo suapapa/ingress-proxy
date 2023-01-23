@@ -34,19 +34,22 @@ func initLogger() {
 		"ver":      programVer,
 	})
 
-	tryCnt := 5
+	tryCnt := 100
 	var fluentHook *logrus_fluent.FluentHook
 	var err error
-	for tryCnt > 0 {
+	for fluentHook == nil {
 		// fluent hook
 		fluentHook, err = logrus_fluent.NewWithConfig(logrus_fluent.Config{
 			Host: "localhost",
 			Port: 24224,
 		})
 		if err != nil {
-			fmt.Printf("fail to connect fluentd (remain cnt: %d)", tryCnt)
-			time.Sleep(5 * time.Second)
+			fmt.Printf("fail to connect fluentd (remain cnt: %d)\n", tryCnt)
+			time.Sleep(10 * time.Second)
 			tryCnt--
+			if tryCnt == 0 {
+				break
+			}
 			continue
 		}
 		break
