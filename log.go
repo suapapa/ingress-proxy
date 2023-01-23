@@ -46,6 +46,7 @@ func initLogger() {
 		if err != nil {
 			fmt.Printf("fail to connect fluentd (remain cnt: %d)", tryCnt)
 			time.Sleep(5 * time.Second)
+			tryCnt--
 			continue
 		}
 		break
