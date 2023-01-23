@@ -29,9 +29,9 @@ var (
 )
 
 func main() {
-	notifyToTelegram("started")
+	log.Warn("started")
 	defer func() {
-		notifyToTelegram("terminated")
+		log.Warn("terminated")
 	}()
 
 	flag.StringVar(&linksConf, "c", "conf/links.yaml", "yaml file which has links")

@@ -125,7 +125,6 @@ func startHTTPSServerInternal(checkSSLCert bool) error {
 		if err := checkSSLCertUpdated(); err != nil {
 			err = errors.Wrap(err, "fail to check CERT")
 			log.Errorf("fail to create ssl cert %v", err)
-			notifyToTelegram(err.Error())
 			return err
 		}
 	}
@@ -137,7 +136,6 @@ func startHTTPSServerInternal(checkSSLCert bool) error {
 			nil,
 		); err != nil {
 			err = errors.Wrap(err, "fail to start HTTPS")
-			notifyToTelegram(err.Error())
 			log.Fatalf("fail to listen and serve https %v", err)
 		}
 	}()

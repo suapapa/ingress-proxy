@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/md5"
-	"fmt"
 	"io"
 	"os"
 
@@ -31,12 +30,4 @@ func md5sumFile(filePath string) ([]byte, error) {
 	}
 
 	return h.Sum(nil), nil
-}
-
-func notifyToTelegram(msg string) {
-	msgFmt := "## %s-%s ##\n%v"
-
-	if err2 := sendMsgToTelegram(fmt.Sprintf(msgFmt, programName, programVer, msg)); err2 != nil {
-		log.Errorf("%s", err2)
-	}
 }
