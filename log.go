@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -33,14 +34,23 @@ func initLogger() {
 		"ver":      programVer,
 	})
 
-	// fluent hook
-	fluentHook, err := logrus_fluent.NewWithConfig(logrus_fluent.Config{
-		Host: "localhost",
-		Port: 24224,
-	})
-	if err != nil {
-		panic(err)
+	tryCnt := 5
+	var fluentHook *logrus_fluent.FluentHook
+	var err error
+	for tryCnt > 0 {
+		// fluent hook
+		fluentHook, err = logrus_fluent.NewWithConfig(logrus_fluent.Config{
+			Host: "localhost",
+			Port: 24224,
+		})
+		if err != nil {
+			fmt.Printf("fail to connect fluentd (remain cnt: %d)", tryCnt)
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		break
 	}
+
 	fluentHook.SetMessageField("message")
 	fluentHook.SetLevels([]logrus.Level{
 		logrus.PanicLevel, logrus.FatalLevel, logrus.ErrorLevel, logrus.WarnLevel,
