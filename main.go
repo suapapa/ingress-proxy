@@ -29,9 +29,9 @@ var (
 )
 
 func main() {
-	log.Warn("started")
+	log.WithField("alert", "telegram").Infof("%s start", programName)
 	defer func() {
-		log.Warn("terminated")
+		log.WithField("alert", "telegram").Infof("%s stop", programName)
 	}()
 
 	flag.StringVar(&linksConf, "c", "conf/links.yaml", "yaml file which has links")
