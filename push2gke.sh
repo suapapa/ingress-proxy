@@ -11,4 +11,4 @@ docker tag $IMAGE_TAG $IMAGE_TAG_LATEST
 docker push $IMAGE_TAG_LATEST
 
 git tag -a $1 -m "add tag for $1"
-git push --tags
+git push origin main --tags

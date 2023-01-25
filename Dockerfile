@@ -33,6 +33,8 @@ RUN SLEEPTIME=$(awk 'BEGIN{srand(); print int(rand()*(3600+1))}'); \
 	tee -a /etc/crontabs/root > /dev/null
 
 COPY --from=builder /build/create_ssl_cert.sh /bin/create_ssl_cert.sh
+RUN chmod +x /bin/create_ssl_cert.sh
+
 COPY --from=builder /build/app /bin/app
 
 ## install gcsfuse
