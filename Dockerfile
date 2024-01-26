@@ -19,7 +19,7 @@ RUN go build -ldflags "-X main.programVer=${PROGRAM_VER}" -o app
 # RUN upx -q -9 /build/app
 
 # ---
-FROM alpine:3.16
+FROM alpine:latest
 
 RUN apk add --update --no-cache \
 	fuse \
