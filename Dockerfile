@@ -23,14 +23,12 @@ FROM alpine:latest
 
 RUN apk add --update --no-cache \
 	fuse \
-	certbot \
-	dcron \
-	busybox-initscripts
+	certbot
 
 # try to renew letsencrypt ssl cert in every 12 hours
 RUN SLEEPTIME=$(awk 'BEGIN{srand(); print int(rand()*(3600+1))}'); \
-	echo "0 0,12 * * * root sleep $SLEEPTIME && certbot renew -q" | \
-	tee -a /etc/crontabs/root > /dev/null
+	crontab -l | { cat; echo "0 0,12 * * * root sleep $SLEEPTIME && certbot renew -q"; } | \
+	crontab -
 
 COPY --from=builder /build/create_ssl_cert.sh /bin/create_ssl_cert.sh
 RUN chmod +x /bin/create_ssl_cert.sh
@@ -52,4 +50,4 @@ RUN ln -s /bucket/cert /etc/letsencrypt
 
 WORKDIR /bin
 
-ENTRYPOINT ["./app"]
+CMD ['sh', '-c', 'crond && ./app']
