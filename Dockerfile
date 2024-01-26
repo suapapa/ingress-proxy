@@ -50,4 +50,4 @@ RUN ln -s /bucket/cert /etc/letsencrypt
 
 WORKDIR /bin
 
-CMD ['sh', '-c', 'crond && ./app']
+ENTRYPOINT ['/bin/sh', '-c', 'crond && ./app']
