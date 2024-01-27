@@ -49,6 +49,4 @@ EXPOSE 80
 RUN mkdir /bucket
 RUN ln -s /bucket/cert /etc/letsencrypt
 
-WORKDIR /bin
-
-ENTRYPOINT ['./app']
+ENTRYPOINT ["sh", "-c", "/bin/app"]
