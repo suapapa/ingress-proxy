@@ -4,7 +4,8 @@ FROM golang:alpine as builder
 ARG PROGRAM_VER=dev-docker
 
 ## build gcsfuse v0.41.6 is latest release at point of writing (2022-09-11)
-ARG GCSFUSE_VERSION=v0.41.6
+# ARG GCSFUSE_VERSION=v0.41.6
+ARG GCSFUSE_VERSION=v1.4.1
 
 RUN go install github.com/googlecloudplatform/gcsfuse@${GCSFUSE_VERSION}
 
