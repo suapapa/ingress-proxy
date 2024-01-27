@@ -89,6 +89,9 @@ func main() {
 	})
 	go startHTTPSServer(true)
 
+	// renew cert
+	go renewCert()
+
 	// PortFowarding
 	go startPortFoward()
 
