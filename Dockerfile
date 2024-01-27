@@ -26,17 +26,17 @@ RUN apk add --update --no-cache \
 	certbot
 
 # try to renew letsencrypt ssl cert in every 12 hours
-RUN SLEEPTIME=$(awk 'BEGIN{srand(); print int(rand()*(3600+1))}'); \
-	crontab -l | { cat; echo "0 0,12 * * * root sleep $SLEEPTIME && certbot renew -q"; } | \
-	crontab -
+# RUN SLEEPTIME=$(awk 'BEGIN{srand(); print int(rand()*(3600+1))}'); \
+# 	crontab -l | { cat; echo "0 0,12 * * * root sleep $SLEEPTIME && certbot renew -q"; } | \
+# 	crontab -
 
 COPY --from=builder /build/create_ssl_cert.sh /bin/create_ssl_cert.sh
 RUN chmod +x /bin/create_ssl_cert.sh
 
-COPY --from=builder /build/app /bin/app
+COPY --from=builder /build/app /bin/
 
 ## install gcsfuse
-COPY --from=builder /go/bin/gcsfuse /usr/bin
+COPY --from=builder /go/bin/gcsfuse /usr/bin/
 
 ENV TELEGRAM_APITOKEN="secret"
 ENV TELEGRAM_ROOM_ID="secret"
@@ -50,4 +50,4 @@ RUN ln -s /bucket/cert /etc/letsencrypt
 
 WORKDIR /bin
 
-ENTRYPOINT ['/bin/app']
+ENTRYPOINT ['./app']
