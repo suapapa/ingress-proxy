@@ -54,3 +54,10 @@
   reverse_proxy: true
   reverse_proxy_link: http://asset.default.svc.cluster.local:8080
   hide: true
+
+- name: /lan
+  link: http://homin.dev/lan
+  revserce_proxy: true
+  reverse_proxy_link: http://omv.homin.lan:3000
+  desc: 로컬 네트워크
+  hide: true
