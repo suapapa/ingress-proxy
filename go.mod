@@ -1,6 +1,6 @@
 module github.com/suapapa/ingress-proxy
 
-go 1.19
+go 1.27.0
 
 require (
 	github.com/evalphobia/logrus_fluent v0.5.4
